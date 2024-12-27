@@ -1,15 +1,14 @@
 import "./App.css";
 import { AddButton } from "./components/cases/AddButton";
-import {HomePage} from "./pages/home/HomePage";
+import { HomePage } from "./pages/home/HomePage";
+import { customTheme } from "./theme";
+import { ThemeProvider } from "@mui/system";
 
-export const App=() =>{
-
+export const App = () => {
   return (
-    <>
-      <AddButton/>
+    <ThemeProvider theme={customTheme}>
+      <AddButton />
       <HomePage></HomePage>
-    </>
+    </ThemeProvider>
   );
-}
-
-
+};
