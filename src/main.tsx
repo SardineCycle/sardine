@@ -1,10 +1,15 @@
-import { RouterProvider } from "@tanstack/react-router";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { router } from "./route";
+import { RouterProvider } from '@tanstack/react-router';
+import { StrictMode } from 'react';
+import { router } from './route';
+import ReactDOM from 'react-dom/client';
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
-);
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+const rootElement = document.getElementById('root')!;
+if (!rootElement.innerHTML) {
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(
+		<StrictMode>
+			<RouterProvider router={router} />
+		</StrictMode>
+	);
+}

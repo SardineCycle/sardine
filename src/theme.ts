@@ -1,25 +1,38 @@
-import { createTheme } from "@mui/system";
+import { createTheme } from '@mui/system';
 
 export const customTheme = createTheme({
   color: {
-    primary: "#1976d2",
-    text: "black",
+    primary: '#83DBD6',
+    secondary: '#529793',
+    neutral: '#808B9F',
+    text: 'black',
+  },
+  size: {
+    menuSize: 30, // メニューアイコンのサイズ（例: 30px）
   },
 });
 
-declare module "@mui/system" {
-  // TODO(char5742): テーマを設定する
+declare module '@mui/system' {
   interface Theme {
     color: {
       primary: string;
+      secondary: string;
+      neutral: string;
       text: string;
     };
+    size: {
+      menuSize: number;
+    };
   }
-  // allow configuration using `createTheme()`
   interface ThemeOptions {
     color?: {
       primary?: string;
-      text: string;
+      secondary?: string;
+      neutral?: string;
+      text?: string;
+    };
+    size?: {
+      menuSize?: number;
     };
   }
 }

@@ -1,11 +1,7 @@
-import { createRootRoute, createRouter } from "@tanstack/react-router";
-import { App } from "./App";
+import {  createRouter } from "@tanstack/react-router";
+// Import the generated route tree
+import { routeTree } from './routeTree.gen'
 
-const rootRoute = createRootRoute({
-  component: () => <App />,
-});
-
-const routeTree = rootRoute;
 
 export const router = createRouter({ routeTree });
 

@@ -1,12 +1,20 @@
-import { TaskList } from './components/TaskList';
+import { TaskList } from './-components/TaskList';
 import type { Task } from '../../types/task/Task';
+import { Card } from '../../components/bases/Card/Card';
 import { styled } from '@mui/system';
+import { createLazyFileRoute } from '@tanstack/react-router';
+import { HamburgerMenu } from '../../components/bases/HamburgerMenu/HamburgerMenu';
+import ProgressBar from './-components/ProgressBar';
+
+export const Route = createLazyFileRoute('/top/')({
+	component: TopPage,
+});
 
 const BaseArea = styled('div')(({ theme }) => ({
-	backgroundColor: theme.color.primary,
+	// backgroundColor: theme.color.primary,
 }));
 
-export const HomePage = () => {
+function TopPage() {
 	const items = [
 		{
 			id: '1',
@@ -30,8 +38,11 @@ export const HomePage = () => {
 	return (
 		<>
 			<BaseArea>
+				<HamburgerMenu />
+				<ProgressBar size={4} />
 				<TaskList taskList={items} />
+				<Card isEmpty={true} />
 			</BaseArea>
 		</>
 	);
-};
+}
