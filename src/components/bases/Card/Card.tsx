@@ -1,26 +1,8 @@
-import { styled } from "@mui/system";
+import { styled } from '@mui/system';
 
-type CardProps = {
-	isEmpty: boolean; // タスクが空かどうか
-  taskName?: string; // カード(タスク)のタイトル
-	time?: number; // タスクの時間
-};
-
-export const Card: React.FC<CardProps> = ({isEmpty, taskName, time}) => {
-  return (
-		<>
-			{isEmpty ? (
-				<CardArea>タスクがありません</CardArea>
-			) : (
-				<CardArea>
-					<h2>{taskName}</h2>
-					<p>{time}</p>
-				</CardArea>
-			)}
-		</>
-  );
-};
-
-const CardArea= styled('div')(({ theme }) => ({
-	backgroundColor: theme.color.primary,
+export const Card = styled('div')(({ theme }) => ({
+	backgroundColor: theme.color.secondary,
+	borderRadius: '2rem',
+	padding: '2rem',
+	boxShadow: '-4px 4px 10px 2px rgb(0 0 0 / 0.25)',
 }));

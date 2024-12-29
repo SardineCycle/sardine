@@ -1,10 +1,9 @@
-import { TaskList } from './-components/TaskList';
-import type { Task } from '../../types/task/Task';
-import { Card } from '../../components/bases/Card/Card';
 import { styled } from '@mui/system';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { HamburgerMenu } from '../../components/bases/HamburgerMenu/HamburgerMenu';
 import ProgressBar from './-components/ProgressBar';
+import { PeriodCard } from './-components/PeriodCard';
+import { TaskName } from './-components/TaskName';
 
 export const Route = createLazyFileRoute('/top/')({
 	component: TopPage,
@@ -12,6 +11,7 @@ export const Route = createLazyFileRoute('/top/')({
 
 const BaseArea = styled('div')(({ theme }) => ({
 	// backgroundColor: theme.color.primary,
+	height: '70vh',
 }));
 
 function TopPage() {
@@ -34,14 +34,18 @@ function TopPage() {
 			description: 'Description 3',
 			completed: false,
 		},
-	] satisfies Task[];
+	];
 	return (
 		<>
 			<BaseArea>
 				<HamburgerMenu />
-				<ProgressBar size={4} />
-				<TaskList taskList={items} />
-				<Card isEmpty={true} />
+				<TaskName name={'掃除'} />
+				<ProgressBar size={2} />
+				<PeriodCard
+					taskName='ズボン'
+					elapsedTimeSeconds={272}
+					durationTimeSeconds={300}
+				/>
 			</BaseArea>
 		</>
 	);

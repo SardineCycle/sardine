@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 type ProgressBarProps = {
-    size: number;
+	size: number;
 };
 
-function ProgressBar({ size }: { size: number }) {
+function ProgressBar({ size }: ProgressBarProps) {
 	const max = 100;
 	const base = 6;
 	const width = max / size;
@@ -31,7 +31,7 @@ const SegmentContainer = styled('li')<{ width: number }>(({ width }) => ({
 
 const ProgressSegment = styled('div')<{ isDone: boolean }>(
 	({ theme, isDone }) => ({
-		backgroundColor: isDone ? theme.color.primary : '#C4C4C4',
+		backgroundColor: isDone ? "#46EBA1" : '#C4C4C4',
 		width: '80%',
 		height: '100%',
 		borderRadius: '2rem',
@@ -47,7 +47,8 @@ const RemainingSegment = styled('div')(({ theme }) => ({
 
 const ProgressBarContainer = styled('ul')(({ theme }) => ({
 	display: 'flex',
-	width: '100%',
+	width: '70%',
+	margin: '1rem auto',
 	height: '2rem',
 	backgroundColor: 'oklab(from #6B6B9B l a b / 0.5)',
 	borderRadius: '20px',
