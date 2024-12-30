@@ -2,6 +2,7 @@ import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { router } from './route';
 import ReactDOM from 'react-dom/client';
+import './firebase';
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
 const rootElement = document.getElementById('root')!;
@@ -10,6 +11,6 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<StrictMode>
 			<RouterProvider router={router} />
-		</StrictMode>
+		</StrictMode>,
 	);
 }
