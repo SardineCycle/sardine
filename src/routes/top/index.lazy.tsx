@@ -5,6 +5,7 @@ import ProgressBar from './-components/ProgressBar';
 import { PeriodCard } from './-components/period-card/PeriodCard';
 import { TaskName } from './-components/TaskName';
 import { SwipeablePeriodCardsContainer } from './-components/SwipeablePeriodCardsContainer';
+import { TimerContainer } from './-components/timer';
 
 export const Route = createLazyFileRoute('/top/')({
 	component: TopPage,
@@ -34,28 +35,29 @@ function TopPage() {
 								/>
 							),
 						},
-						{
-							taskId: '2',
-							child: (
-								<PeriodCard
-									taskName='シャツ'
-									elapsedTimeSeconds={1}
-									durationTimeSeconds={300}
-								/>
-							),
-						},
-						{
-							taskId: '3',
-							child: (
-								<PeriodCard
-									taskName='ズボン'
-									elapsedTimeSeconds={222}
-									durationTimeSeconds={300}
-								/>
-							),
-						},
+						// {
+						// 	taskId: '2',
+						// 	child: (
+						// 		<PeriodCard
+						// 			taskName='シャツ'
+						// 			elapsedTimeSeconds={1}
+						// 			durationTimeSeconds={300}
+						// 		/>
+						// 	),
+						// },
+						// {
+						// 	taskId: '3',
+						// 	child: (
+						// 		<PeriodCard
+						// 			taskName='ズボン'
+						// 			elapsedTimeSeconds={222}
+						// 			durationTimeSeconds={300}
+						// 		/>
+						// 	),
+						// },
 					]}
 				/>
+				<TimerContainer />
 			</BaseArea>
 		</>
 	);

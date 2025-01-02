@@ -1,27 +1,34 @@
 import { styled } from "@mui/system";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { atom, useAtom } from "jotai";
+
+// Jotaiで経過時間を管理
+const elapsedTimeAtom = atom(0);
 
 type TimeDisplayProps = {
   durationTimeSeconds?: number; // 設定時間（秒）
-  elapsedTimeSeconds?: number;  // 経過時間（秒）
 };
 
 export const TimeDisplay: React.FC<TimeDisplayProps> = ({
   durationTimeSeconds = 0,
-  elapsedTimeSeconds = 0,
 }) => {
-  const [remainingSeconds, setRemainingSeconds] = useState(0); // 残り時間（秒）
+  const [elapsedTimeSeconds, setElapsedTimeSeconds] = useAtom(elapsedTimeAtom);
 
   useEffect(() => {
-    const diff = durationTimeSeconds - elapsedTimeSeconds; // 残り時間を計算
-    setRemainingSeconds(Math.max(diff, 0)); // 0秒未満にならないように補正
-  }, [durationTimeSeconds, elapsedTimeSeconds]);
+    const interval = setInterval(() => {
+      setElapsedTimeSeconds((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [setElapsedTimeSeconds]);
+
+  const remainingSeconds = Math.max(durationTimeSeconds - elapsedTimeSeconds, 0);
 
   // 分・秒に変換
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
 
-  const displayMinutes = String(minutes).padStart(2, "0"); // 1→01,10→10
+  const displayMinutes = String(minutes).padStart(2, "0");
   const displaySeconds = String(seconds).padStart(2, "0");
 
   return (
@@ -101,16 +108,13 @@ type IndicatorDotWrapperProps = {
 
 const IndicatorDotWrapper = styled("div")<IndicatorDotWrapperProps>(
   ({ durationTimeSeconds, remainingSeconds }) => {
-    // 残り時間割合を計算
     const fraction =
       durationTimeSeconds > 0
         ? remainingSeconds / durationTimeSeconds
         : 0;
-    // 回転角度 (0～360)
     const degrees = fraction * 360;
 
     return {
-      // 中心を (50%, 50%) にしておいて、そこを基準に回転
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -124,13 +128,9 @@ const IndicatorDotWrapper = styled("div")<IndicatorDotWrapperProps>(
 
 // ===== ドットそのもの =====
 const IndicatorDot = styled("div")({
-  // ラッパ要素を回転させた状態で、ドットは “上端” (半径ぶん) に置く
   position: "absolute",
-  // 以下は、直径 1.2rem の丸を作っているので、半径 0.6rem 分だけ上にずらすイメージ
-  // ただし、外側の円の半径が 8rem (直径 16rem) = 実際の px で言えば 128px
-  // ドットの中心が外周上に来るように top を負の値にする (上方向へ)
-  top: "-8.1rem", // ちょうどインジケータ外周分 (8rem) 上に置く
-  left: "-0.6rem", // ドット自身の直径が 1.2rem なので、半分ずらして中心に
+  top: "-8.1rem",
+  left: "-0.6rem",
   width: "1.2rem",
   height: "1.2rem",
   borderRadius: "50%",

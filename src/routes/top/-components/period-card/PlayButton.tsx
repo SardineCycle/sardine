@@ -1,9 +1,11 @@
 import { styled } from '@mui/material/styles';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import { useStartPomodoro } from '../../../../atoms/pomodoro-atom';
 
 export const PlayButton = () => {
+	const startPomodoro = useStartPomodoro();
 	return (
-		<PlayButtonStyled>
+		<PlayButtonStyled onClick={startPomodoro}>
 			<PlayIcon />
 		</PlayButtonStyled>
 	);
