@@ -1,11 +1,37 @@
 import { styled } from '@mui/material/styles';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import { useStartPomodoro } from '../../../../atoms/pomodoro-atom';
+import { statusAtom, useStartPomodoro } from '../../../../atoms/pomodoro-atom';
+import { usePausePomodoro } from '../../../../atoms/pomodoro-atom';
+import { useResumePomodoro } from '../../../../atoms/pomodoro-atom';
+import { useAtom } from 'jotai';
+import { match } from 'ts-pattern';
+import { PeriodStatus } from '../../../../features/pomodoro/models/PeriodEvent';
 
 export const PlayButton = () => {
 	const startPomodoro = useStartPomodoro();
+	const pausePomodoro = usePausePomodoro();
+	const resumePomodoro = useResumePomodoro();
+
+	// 現在のポモドーロの状態(statusAtom)を取得
+	const [status] = useAtom(statusAtom);
+
+	const changeStatus = () => {
+		return match(status)
+			.with({ status: PeriodStatus.None }, () => {
+				startPomodoro();
+			})
+			.with({ status: PeriodStatus.Paused }, () => {
+				resumePomodoro();
+			})
+			.with({ status: PeriodStatus.Active }, () => {
+				pausePomodoro();
+			})
+			.with({ status: PeriodStatus.Completed }, () => {})
+			.exhaustive();
+	};
+
 	return (
-		<PlayButtonStyled onClick={startPomodoro}>
+		<PlayButtonStyled onClick={changeStatus}>
 			<PlayIcon />
 		</PlayButtonStyled>
 	);

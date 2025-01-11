@@ -19,7 +19,7 @@ export const SwipeablePeriodCardsContainer = ({ cards }: Props) => {
 			spaceBetween={10}
 			slidesPerView={1.2}
 			centeredSlides={true}
-			onSlideChange={() => console.log('slide change')}
+			onSlideChange={(swiper) => console.log(swiper)}
 			onSwiper={(swiper) => console.log(swiper)}
 		>
 			{cards.map(({ taskId, child }) => (

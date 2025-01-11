@@ -5,7 +5,10 @@ import ProgressBar from './-components/ProgressBar';
 import { PeriodCard } from './-components/period-card/PeriodCard';
 import { TaskName } from './-components/TaskName';
 import { SwipeablePeriodCardsContainer } from './-components/SwipeablePeriodCardsContainer';
-import { TimerContainer } from './-components/timer';
+import { newTask } from '../../features/task/task.model';
+import { pomodoroAtom } from '../../atoms/pomodoro-atom';
+import { useAtom } from 'jotai';
+import { taskAtom } from '../../atoms/task-atom';
 
 export const Route = createLazyFileRoute('/top/')({
 	component: TopPage,
@@ -17,47 +20,25 @@ const BaseArea = styled('div')(({ theme }) => ({
 }));
 
 function TopPage() {
+	const [task] = useAtom(taskAtom);
+
+	const cards = task.subTasks.map((subTask) => ({
+		taskId: subTask.id,
+		child: (
+			<PeriodCard
+				taskName={subTask.name}
+				durationTimeSeconds={subTask.pomodoroProps.activeDurationSeconds}
+			/>
+		),
+	}));
+
 	return (
 		<>
 			<BaseArea>
 				<HamburgerMenu />
-				<TaskName name={'掃除'} />
-				<ProgressBar size={2} />
-				<SwipeablePeriodCardsContainer
-					cards={[
-						{
-							taskId: '1',
-							child: (
-								<PeriodCard
-									taskName='帽子'
-									elapsedTimeSeconds={0}
-									durationTimeSeconds={300}
-								/>
-							),
-						},
-						// {
-						// 	taskId: '2',
-						// 	child: (
-						// 		<PeriodCard
-						// 			taskName='シャツ'
-						// 			elapsedTimeSeconds={1}
-						// 			durationTimeSeconds={300}
-						// 		/>
-						// 	),
-						// },
-						// {
-						// 	taskId: '3',
-						// 	child: (
-						// 		<PeriodCard
-						// 			taskName='ズボン'
-						// 			elapsedTimeSeconds={222}
-						// 			durationTimeSeconds={300}
-						// 		/>
-						// 	),
-						// },
-					]}
-				/>
-				<TimerContainer />
+				<TaskName name={task.name} />
+				<ProgressBar size={task.subTasks.length} />
+				<SwipeablePeriodCardsContainer cards={cards} />
 			</BaseArea>
 		</>
 	);

@@ -1,26 +1,32 @@
-import { v4 as uuidv4 } from 'uuid';
 import { atom, useAtom } from 'jotai';
 import { atomWithObservable } from 'jotai/utils';
-
 import {
-	type PeriodEvent,
-	type PomodoroSession,
-	PeriodEventType,
-	newPomodoroSession,
 	activePeriodElapsedSeconds,
-	isActivePeriod,
 	activePeriodStatus,
+	breakPeriodElapsedSeconds,
 	breakPeriodStatus,
+	isActivePeriod,
+	newPomodoroSession,
+	type PomodoroSession,
+} from '../features/pomodoro/models/PomodoroSession';
+
+import { subTaskIndexAtom, taskAtom } from './task-atom';
+import {
 	type ActivePeriodStatus,
 	type BreakPeriodStatus,
-} from '../features/pomodoro/pomodoro.model';
+	newStartedPeriodEvent,
+	newPausedPeriodEvent,
+	newResumedPeriodEvent,
+	type PeriodEvent,
+} from '../features/pomodoro/models/PeriodEvent';
 
-const _pomodoroAtom = atom<PomodoroSession>(
-	newPomodoroSession({
-		activeDurationSeconds: 25 * 60,
-		breakDurationSeconds: 5 * 60,
-	}),
-);
+export const pomodoroAtom = atom<PomodoroSession>((get) => {
+	const task = get(taskAtom);
+	const index = get(subTaskIndexAtom);
+	return newPomodoroSession(task.subTasks[index].pomodoroProps);
+});
+
+const pomodoroEventsAtom = atom<PeriodEvent[]>([]);
 
 // jotaiのobservable用
 function createObservable<T>(
@@ -39,12 +45,16 @@ function createObservable<T>(
 
 // 経過時間の監視Atom
 // 100msごとに経過時間を更新する
-export const elapsedTimeAtom = atomWithObservable((get) => {
+export const elapsedTimeAtom = atomWithObservable<number>((get) => {
 	return createObservable<number>((emit) => {
-		const pomodoro = get(_pomodoroAtom);
+		const pomodoro = get(pomodoroAtom);
+		const events = get(pomodoroEventsAtom);
 		const intervalId = setInterval(() => {
-			const elapsedTime = activePeriodElapsedSeconds(pomodoro);
-			emit(elapsedTime);
+			if (isActivePeriod(pomodoro, events)) {
+				emit(activePeriodElapsedSeconds(pomodoro, events));
+			} else {
+				emit(breakPeriodElapsedSeconds(pomodoro, events));
+			}
 		}, 100);
 
 		// Cleanup function for unsubscribe
@@ -52,44 +62,47 @@ export const elapsedTimeAtom = atomWithObservable((get) => {
 	});
 });
 
-const _eventPomodoroAtom = atom<null, PeriodEvent[], void>(
-	null,
-	(get, set, update) => {
-		const pomodoro = get(_pomodoroAtom);
-		console.log('event', update);
-		if (pomodoro.activePeriod.id === update.periodId) {
-			pomodoro.activePeriod.events.push(update);
-		} else if (pomodoro.breakPeriod.id === update.periodId) {
-			pomodoro.breakPeriod.events.push(update);
-		}
-		set(_pomodoroAtom, pomodoro);
-	},
-);
-
 export const statusAtom = atom<ActivePeriodStatus | BreakPeriodStatus>(
 	(get) => {
-		const pomodoro = get(_pomodoroAtom);
-
-		if (isActivePeriod(pomodoro)) {
-			return activePeriodStatus(pomodoro);
+		const pomodoro = get(pomodoroAtom);
+		const events = get(pomodoroEventsAtom);
+		if (isActivePeriod(pomodoro, events)) {
+			return activePeriodStatus(pomodoro, events);
 		}
-		return breakPeriodStatus(pomodoro);
+		return breakPeriodStatus(pomodoro, events);
 	},
 );
 
+// 初回に再生ボタンを押して発火する関数
 export function useStartPomodoro() {
-	const [pomodoro] = useAtom(_pomodoroAtom);
-	const [, setEventPomodoro] = useAtom(_eventPomodoroAtom);
+	// 現在のポモドーロの状態(pomodoroSessionAtom)を取得
+	const [pomodoro, ] = useAtom(pomodoroAtom);
+	const [events, setEvents] = useAtom(pomodoroEventsAtom);
 
-	const startPomodoro = () => {
-		const event = {
-			id: uuidv4(),
-			periodId: pomodoro.activePeriod.id,
-			type: PeriodEventType.Started,
-			createdAt: new Date(),
-		} satisfies PeriodEvent;
-		setEventPomodoro(event);
-	};
-
-	return startPomodoro;
+	return () =>
+		setEvents([...events, newStartedPeriodEvent(pomodoro.activePeriod.id)]);
 }
+
+// 一時停止ボタンを押して発火する関数
+export function usePausePomodoro() {
+	// 現在のポモドーロの状態(pomodoroSessionAtom)を取得
+	const [pomodoro] = useAtom(pomodoroAtom);
+	const [events, setEvents] = useAtom(pomodoroEventsAtom);
+
+	return () => {
+		setEvents([...events, newPausedPeriodEvent(pomodoro.activePeriod.id)]);
+	};
+}
+
+// 再開ボタンを押して発火する関数
+export function useResumePomodoro() {
+	// 現在のポモドーロの状態(pomodoroSessionAtom)を取得
+	const [pomodoro] = useAtom(pomodoroAtom);
+	const [events, setEvents] = useAtom(pomodoroEventsAtom);
+
+	return () => {
+		setEvents([...events, newResumedPeriodEvent(pomodoro.activePeriod.id)]);
+	};
+}
+
+export function useChangePomodoroSession() {}

@@ -1,9 +1,9 @@
 import { styled } from "@mui/system";
 import { useEffect } from "react";
 import { atom, useAtom } from "jotai";
+import { elapsedTimeAtom } from "../../../../atoms/pomodoro-atom";
 
-// Jotaiで経過時間を管理
-const elapsedTimeAtom = atom(0);
+
 
 type TimeDisplayProps = {
   durationTimeSeconds?: number; // 設定時間（秒）
@@ -12,24 +12,22 @@ type TimeDisplayProps = {
 export const TimeDisplay: React.FC<TimeDisplayProps> = ({
   durationTimeSeconds = 0,
 }) => {
-  const [elapsedTimeSeconds, setElapsedTimeSeconds] = useAtom(elapsedTimeAtom);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsedTimeSeconds((prev) => prev + 1);
-    }, 1000);
+// elapsedTimeSecondsとdurationTimeSecondsを整数化
+const [elapsedTimeSeconds] = useAtom(elapsedTimeAtom);
+const durationTimeSecondsInt = Math.floor(durationTimeSeconds);
+const elapsedTimeSecondsInt = Math.floor(elapsedTimeSeconds);
 
-    return () => clearInterval(interval);
-  }, [setElapsedTimeSeconds]);
+// 残り秒数を計算
+const remainingSeconds = Math.max(durationTimeSecondsInt - elapsedTimeSecondsInt, 0);
 
-  const remainingSeconds = Math.max(durationTimeSeconds - elapsedTimeSeconds, 0);
+// 分・秒に変換
+const minutes = Math.floor(remainingSeconds / 60); // 分数部分
+const seconds = remainingSeconds % 60; // 秒数部分
 
-  // 分・秒に変換
-  const minutes = Math.floor(remainingSeconds / 60);
-  const seconds = remainingSeconds % 60;
-
-  const displayMinutes = String(minutes).padStart(2, "0");
-  const displaySeconds = String(seconds).padStart(2, "0");
+// 表示用のゼロ埋め
+const displayMinutes = String(minutes).padStart(2, "0");
+const displaySeconds = String(seconds).padStart(2, "0");
 
   return (
     <IndicatorContainer

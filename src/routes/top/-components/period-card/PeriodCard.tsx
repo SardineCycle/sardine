@@ -8,13 +8,11 @@ import { PlayButton } from './PlayButton';
 type CardProps = {
 	taskName: string; // カード(タスク)のタイトル
 	durationTimeSeconds: number; // カード(タスク)の時間
-	elapsedTimeSeconds: number; // カード(タスク)の経過時間
 };
 
 export const PeriodCard: React.FC<CardProps> = ({
 	taskName,
 	durationTimeSeconds,
-	elapsedTimeSeconds,
 }) => {
 	return (
 		<>
@@ -22,7 +20,6 @@ export const PeriodCard: React.FC<CardProps> = ({
 				<SubTaskNameContainer name={taskName} />
 				<DurationTimeContainer durationTime={durationTimeSeconds} />
 				<TimeDisplay
-					elapsedTimeSeconds={elapsedTimeSeconds}
 					durationTimeSeconds={durationTimeSeconds}
 				/>
 				<SpaceStyle />
